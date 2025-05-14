@@ -1,4 +1,4 @@
-name: Terraform and Ansible Pipeline
+ #Terraform and Ansible Pipeline
 
 on:
   push:
@@ -22,7 +22,8 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          pip install ansible pywinrm
+          python3 -m pip install --upgrade pip
+          pip install ansible pywinrm requests
           sudo apt-get update && sudo apt-get install -y unzip curl sshpass
 
       - name: Install Terraform
@@ -50,6 +51,7 @@ jobs:
 
       - name: Run Ansible for DEV
         run: |
+          pip install ansible pywinrm requests
           ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/manage_services.yml
           ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/windows_updates.yml
           ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/monitoring.yml
@@ -67,6 +69,7 @@ jobs:
 
       - name: Run Ansible for TEST
         run: |
+          pip install ansible pywinrm requests
           ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/manage_services.yml
           ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/windows_updates.yml
           ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/monitoring.yml
@@ -78,8 +81,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Run Ansible for PROD (No Terraform Apply)
+      - name: Run Ansible for PROD 
         run: |
+          pip install ansible pywinrm requests
           ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/manage_services.yml
           ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/windows_updates.yml
           ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/monitoring.yml
