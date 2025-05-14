@@ -1,4 +1,4 @@
- #Terraform and Ansible Pipeline
+#Terraform and Ansible Pipeline
 
 on:
   push:
@@ -45,6 +45,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
+
       - name: Terraform Apply for DEV
         working-directory: terraform/vmware
         run: terraform apply -auto-approve tfplan
@@ -62,6 +67,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
 
       - name: Terraform Apply for TEST
         working-directory: terraform/vmware
@@ -81,7 +91,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Run Ansible for PROD 
+      - name: Run Ansible for PROD (No Terraform install or apply)
         run: |
           pip install ansible pywinrm requests
           ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/manage_services.yml
