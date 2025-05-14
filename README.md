@@ -1,25 +1,29 @@
 # Technical-Task
-System and Application Engineer Technical Task
-<!-- Technical-task/
+System and Application Engineer Technical Task. Full explanation could be found in docs folder. This is a structural representation of the whole repo
+
+<!-- Technical-Task/
+├── .gitignore
 ├── README.md
+├── docs/
+│   └── explanation.md
+├── scripts/
+│   └── winrm_setup.ps1
 ├── terraform/
 │   └── vmware/
 │       ├── main.tf
 │       ├── variables.tf
-│       └── terraform.tfvars
+│       ├── terraform.tfvars
+│       ├── .gitignore
 ├── ansible/
 │   ├── ansible.cfg
 │   ├── inventory/
 │   │   ├── dev.yml
-│   │   ├── test.yml
-│   │   └── prod.yml
+│   │   ├── prod.yml
+│   │   └── test.yml
 │   ├── playbooks/
-│   │   ├── manage_services.yml
-│   │   ├── windows_updates.yml
 │   │   ├── antivirus.yml
-│   │   └── monitoring.yml
+│   │   ├── manage_services.yml
+│   │   ├── monitoring.yml
+│   │   └── windows_updates.yml
 │   └── group_vars/
-├── scripts/
-│   └── winrm_setup.ps1
-├── docs/
-│   └── explanation.md -->
+│       └── all.yml (optional) -->
