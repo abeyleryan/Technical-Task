@@ -1,0 +1,22 @@
+- name: Manage Windows Services
+  hosts: all
+  tasks:
+    - name: Start Spooler service (requires config)
+      win_service:
+        name: Spooler
+        state: started
+
+    - name: Start Windows Update service
+      win_service:
+        name: wuauserv
+        state: started
+
+    - name: Stop Spooler service
+      win_service:
+        name: Spooler
+        state: stopped
+
+    - name: Restart Windows Update service
+      win_service:
+        name: wuauserv
+        state: restarted

@@ -1,0 +1,16 @@
+- name: Run Windows Updates
+  hosts: all
+  tasks:
+    - name: Install security updates
+      win_updates:
+        category_names:
+          - SecurityUpdates
+        reboot: yes
+
+    - name: Check installed updates
+      win_shell: Get-HotFix | Sort-Object -Property InstalledOn
+      register: updates
+
+    - name: Show installed updates
+      debug:
+        msg: "{{ updates.stdout_lines }}"

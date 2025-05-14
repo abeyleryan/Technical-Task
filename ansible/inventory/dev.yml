@@ -1,0 +1,9 @@
+all:
+  hosts:
+    win-srv-dev:
+      ansible_host: 192.168.1.50
+      ansible_user: Administrator
+      ansible_password: VMPassword123
+      ansible_connection: winrm
+      ansible_winrm_transport: basic
+      ansible_port: 5985

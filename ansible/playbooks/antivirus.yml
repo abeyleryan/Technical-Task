@@ -1,0 +1,18 @@
+- name: Manage Antivirus on Windows
+  hosts: all
+  tasks:
+    - name: Ensure Defender is enabled
+      win_feature:
+        name: Windows-Defender-Features
+        state: present
+
+    - name: Run quick scan with Defender
+      win_command: "C:\\Program Files\\Windows Defender\\MpCmdRun.exe -Scan -ScanType 1"
+
+    - name: Check for recent malware
+      win_shell: Get-MpThreatDetection
+      register: threats
+
+    - name: Print threats
+      debug:
+        msg: "{{ threats.stdout }}"
