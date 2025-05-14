@@ -39,6 +39,12 @@ jobs:
           terraform validate
           terraform plan -out=tfplan
 
+      - name: Save tfplan artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: terraform/vmware/tfplan
+
   deploy-dev:
     needs: setup
     runs-on: ubuntu-latest
@@ -50,17 +56,15 @@ jobs:
         with:
           terraform_version: 1.3.7
 
+      - name: Download tfplan artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: terraform/vmware
+
       - name: Terraform Apply for DEV
         working-directory: terraform/vmware
         run: terraform apply -auto-approve tfplan
-
-      - name: Run Ansible for DEV
-        run: |
-          pip install ansible pywinrm requests
-          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/manage_services.yml
-          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/windows_updates.yml
-          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/monitoring.yml
-          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/antivirus.yml
 
   deploy-test:
     needs: setup
@@ -73,28 +77,26 @@ jobs:
         with:
           terraform_version: 1.3.7
 
+      - name: Download tfplan artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: terraform/vmware
+
       - name: Terraform Apply for TEST
         working-directory: terraform/vmware
         run: terraform apply -auto-approve tfplan
 
-      - name: Run Ansible for TEST
-        run: |
-          pip install ansible pywinrm requests
-          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/manage_services.yml
-          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/windows_updates.yml
-          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/monitoring.yml
-          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/antivirus.yml
-
-  deploy-prod:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Run Ansible for PROD (No Terraform install or apply)
-        run: |
-          pip install ansible pywinrm requests
-          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/manage_services.yml
-          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/windows_updates.yml
-          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/monitoring.yml
-          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/antivirus.yml
+#  deploy-prod:
+#    needs: setup
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - name: Run Ansible for PROD 
+#        run: |
+#          pip install ansible pywinrm requests
+#          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/manage_services.yml
+#          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/windows_updates.yml
+#          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/monitoring.yml
+#          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/antivirus.yml
