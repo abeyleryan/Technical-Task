@@ -43,6 +43,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Terraform Apply for DEV
+        working-directory: terraform/vmware
+        run: terraform apply -auto-approve tfplan
+
       - name: Run Ansible for DEV
         run: |
           ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/manage_services.yml
@@ -55,6 +60,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Terraform Apply for TEST
+        working-directory: terraform/vmware
+        run: terraform apply -auto-approve tfplan
+
       - name: Run Ansible for TEST
         run: |
           ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/manage_services.yml
@@ -67,7 +77,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run Ansible for PROD
+
+      - name: Run Ansible for PROD (No Terraform Apply)
         run: |
           ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/manage_services.yml
           ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/windows_updates.yml
