@@ -1,0 +1,75 @@
+name: Terraform and Ansible Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      tf_ok: ${{ steps.tf_check.outcome }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python and install Ansible
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
+        run: |
+          pip install ansible pywinrm
+          sudo apt-get update && sudo apt-get install -y unzip curl sshpass
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
+
+      - name: Terraform Init & Plan
+        id: tf_check
+        working-directory: terraform/vmware
+        run: |
+          terraform init
+          terraform validate
+          terraform plan -out=tfplan
+
+  deploy-dev:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Ansible for DEV
+        run: |
+          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/manage_services.yml
+          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/windows_updates.yml
+          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/monitoring.yml
+          ansible-playbook -i ansible/inventory/dev.yml ansible/playbooks/antivirus.yml
+
+  deploy-test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Ansible for TEST
+        run: |
+          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/manage_services.yml
+          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/windows_updates.yml
+          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/monitoring.yml
+          ansible-playbook -i ansible/inventory/test.yml ansible/playbooks/antivirus.yml
+
+  deploy-prod:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Ansible for PROD
+        run: |
+          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/manage_services.yml
+          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/windows_updates.yml
+          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/monitoring.yml
+          ansible-playbook -i ansible/inventory/prod.yml ansible/playbooks/antivirus.yml
