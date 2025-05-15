@@ -96,23 +96,21 @@ Automation
 
 Use Ansible to run PowerShell via win_shell to query metrics (e.g., Get-WmiObject)
 
-Optionally install monitoring agents (e.g., Telegraf)
+Optionally install monitoring agents (e.g., Datadog)
 
 Alarming
 
-Threshold checks with Ansible conditions or external monitoring stack (e.g., Grafana/Prometheus/InfluxDB)
+Threshold checks with Ansible conditions or external monitoring stack (e.g., Grafana/Prometheus)
 
  Network Device Monitoring
 
-Key Metrics
+Key Metrics  - Latency
 
-Latency
+             - Packet loss
 
-Packet loss
+             - Interface throughput
 
-Interface throughput
-
-Error counters
+             - Error counters
 
 Tools
 
@@ -122,7 +120,7 @@ Ansible: Push agent or configure exporters
 
  Analysis
 
-Use Grafana or Splunk for logs and metrics analysis
+Use Grafana  for logs and metrics analysis
 
 Alerting rules for thresholds
 
@@ -207,5 +205,5 @@ Git CLI + VS Code for local editing
 git clone your repo
 Create directory and file structure
 Build Terraform and Ansible code
-Commit with git add . && git commit -m "message"
+Commit with git add . and git commit -m "message"
 Push with git push origin main
