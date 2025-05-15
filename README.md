@@ -26,4 +26,4 @@ System and Application Engineer Technical Task. Full explanation could be found 
 │   │   ├── monitoring.yml
 │   │   └── windows_updates.yml
 │   └── group_vars/
-│       └── all.yml (optional) -->
+│       └── all.yml -->
