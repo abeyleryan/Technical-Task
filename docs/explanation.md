@@ -32,7 +32,7 @@ Modules Used:
 
  Services Managed:
 
-            Service requiring input: Spooler (Print Spooler — typically configured per user/printer)
+            Service requiring input: Spooler (Print Spooler — typically configured per user or printer)
 
             Service not requiring input: wuauserv (Windows Update)
 
@@ -94,13 +94,13 @@ Role of Ansible WinRM
 
              Automation
 
-                 Use Ansible to run PowerShell via win_shell to query metrics (e.g., Get-WmiObject)
+                 Use Ansible to run PowerShell via win_shell to query metrics (Get-WmiObject)
 
-                 Optionally install monitoring agents (e.g., Datadog)
+                 Optionally install monitoring agents (Datadog, etc.)
 
 Alarming
 
-     Threshold checks with Ansible conditions or external monitoring stack (e.g., Grafana/Prometheus)
+     Threshold checks with Ansible conditions or external monitoring stack (Grafana/Prometheus)
 
  Network Device Monitoring
 
@@ -140,7 +140,7 @@ Alerting rules for thresholds
 
           Use num_cpus, memory, and disk parameters in vsphere_virtual_machine resource
 
-          Analyze needs per environment (e.g., dev = 2GB RAM, prod = 8GB RAM)
+          Analyze needs per environment (dev = 2GB RAM, prod = 8GB RAM)
 
 Automation
 
@@ -154,7 +154,7 @@ Automation
 
              Use Ansible win_updates module
 
-             Filter by update category (e.g., SecurityUpdates)
+             Filter by update category (SecurityUpdates)
 
              Force reboot if needed
 
