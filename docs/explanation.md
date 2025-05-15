@@ -2,105 +2,105 @@ This document provides a complete explanation of the technical task requirements
 
  Toolchain Used
 
-Terraform
+         - Terraform
 
-Purpose: Infrastructure provisioning (VM creation in VMware)
+              - Purpose: Infrastructure provisioning (VM creation in VMware)
 
-Why: Declarative, reproducible, cloud-agnostic infrastructure as code
+              - Why: Declarative, reproducible, cloud-agnostic infrastructure as code
 
-Plugin Used: hashicorp/vsphere
+              - Plugin Used: hashicorp/vsphere
 
-Ansible
+         - Ansible
 
-Purpose: Configuration management and task automation
+              - Purpose: Configuration management and task automation
 
-Why: Agentless, uses WinRM for Windows and SSH for Linux, integrates easily with Terraform
+              - Why: Agentless, uses WinRM for Windows and SSH for Linux, integrates easily with Terraform
 
 Modules Used:
 
-win_service: Start/stop/restart Windows services
+              win_service: Start/stop/restart Windows services
 
-win_updates: Manage Windows updates
+              win_updates: Manage Windows updates
 
-win_feature: Enable/disable Windows features
+              win_feature: Enable/disable Windows features
 
-win_shell, win_command: Run PowerShell commands
+              win_shell, win_command: Run PowerShell commands
 
-win_get_url, win_unzip: Download and extract files
+              win_get_url, win_unzip: Download and extract files
 
- Ansible for Managing Windows Services
+              Ansible for Managing Windows Services
 
  Services Managed:
 
-Service requiring input: Spooler (Print Spooler — typically configured per user/printer)
+            Service requiring input: Spooler (Print Spooler — typically configured per user/printer)
 
-Service not requiring input: wuauserv (Windows Update)
+            Service not requiring input: wuauserv (Windows Update)
 
 Role of Ansible WinRM
 
-WinRM (Windows Remote Management) enables Ansible to connect to Windows machines remotely.
+         WinRM (Windows Remote Management) enables Ansible to connect to Windows machines remotely.
 
-PowerShell commands and modules run through WinRM to control the system without needing an agent.
+         PowerShell commands and modules run through WinRM to control the system without needing an agent.
 
  Automating Routine Service Tasks
 
-Task
+     Task
 
-Module
+         Module
 
-Example
+             Example
 
-Check Status
+             Check Status
 
-win_service
+                 win_service
 
-state: started (idempotent check)
+                 state: started (idempotent check)
 
-Start
+            Start
 
-win_service
+                 win_service
 
-state: started
+                 state: started
 
-Stop
+            Stop
 
-win_service
+                 win_service
 
-state: stopped
+                 state: stopped
 
-Restart
+             Restart
 
-win_service
+                 win_service
 
-state: restarted
+                 state: restarted
 
  Environments
 
-Inventory split into dev.yml, test.yml, prod.yml
+       Inventory split into dev.yml, test.yml, prod.yml
 
-Group vars for shared credentials and settings
+     Group vars for shared credentials and settings
 
  Windows Server Monitoring
 
- Key Metrics
+          Key Metrics
 
-CPU Load
+             CPU Load
 
-Memory Usage
+             Memory Usage
 
-Disk Space
+             Disk Space
 
-System Uptime
+             System Uptime
 
-Automation
+             Automation
 
-Use Ansible to run PowerShell via win_shell to query metrics (e.g., Get-WmiObject)
+                 Use Ansible to run PowerShell via win_shell to query metrics (e.g., Get-WmiObject)
 
-Optionally install monitoring agents (e.g., Datadog)
+                 Optionally install monitoring agents (e.g., Datadog)
 
 Alarming
 
-Threshold checks with Ansible conditions or external monitoring stack (e.g., Grafana/Prometheus)
+     Threshold checks with Ansible conditions or external monitoring stack (e.g., Grafana/Prometheus)
 
  Network Device Monitoring
 
@@ -114,96 +114,96 @@ Key Metrics  - Latency
 
 Tools
 
-External: SNMP, Prometheus + SNMP exporter, or Nagios
+     External: SNMP, Prometheus + SNMP exporter, or Nagios
 
-Ansible: Push agent or configure exporters
+    Ansible: Push agent or configure exporters
 
  Analysis
 
-Use Grafana  for logs and metrics analysis
+     Use Grafana  for logs and metrics analysis
 
 Alerting rules for thresholds
 
- VMware VM Provisioning (Terraform)
+     VMware VM Provisioning (Terraform)
 
- Steps:
+         Steps:
 
-Define provider and credentials
+             Define provider and credentials
 
-Use data sources for datacenter, cluster, datastore, network
+             Use data sources for datacenter, cluster, datastore, network
 
-Clone from a Windows template
+             Clone from a Windows template
 
-Customize hostname, IP, and admin password
+             Customize hostname, IP, and admin password
 
-Optimal Resource Allocation
+     Optimal Resource Allocation
 
-Use num_cpus, memory, and disk parameters in vsphere_virtual_machine resource
+          Use num_cpus, memory, and disk parameters in vsphere_virtual_machine resource
 
-Analyze needs per environment (e.g., dev = 2GB RAM, prod = 8GB RAM)
+          Analyze needs per environment (e.g., dev = 2GB RAM, prod = 8GB RAM)
 
- Automation
+Automation
 
-Full provisioning via terraform apply
+     Full provisioning via terraform apply
 
-Template-based VM cloning
+     Template-based VM cloning
 
- Windows Updates Management
+    Windows Updates Management
 
- Automation Steps:
+         Automation Steps:
 
-Use Ansible win_updates module
+             Use Ansible win_updates module
 
-Filter by update category (e.g., SecurityUpdates)
+             Filter by update category (e.g., SecurityUpdates)
 
-Force reboot if needed
+             Force reboot if needed
 
-Determine Successful Update
+             Determine Successful Update
 
-Query installed updates via Get-HotFix
+             Query installed updates via Get-HotFix
 
-Check exit_code of Ansible task
+             Check exit_code of Ansible task
 
- Detect Failure & Retry
+              Detect Failure & Retry
 
-Capture logs and output with register:
+             Capture logs and output with register:
 
-Conditional task to retry on failure using until/retries
+             Conditional task to retry on failure using until/retries
 
  Antivirus Management
 
- Windows (Defender)
+     Windows (Defender)
 
-Enable using win_feature
+         Enable using win_feature
 
-Run scan with MpCmdRun.exe
+         Run scan with MpCmdRun.exe
 
-Check recent threats via PowerShell
+         Check recent threats via PowerShell
 
- Linux (ClamAV)
+     Linux (ClamAV)
 
-Install with Ansible apt or yum
+         Install with Ansible apt or yum
 
-Run clamscan via command:
+         Run clamscan via command:
 
  Monitoring & Alarming
 
-Collect scan results
+     Collect scan results
 
-Trigger email/log alerts if malware is found
+     Trigger email/log alerts if malware is found
 
  -Git & Repository Management
 
- -Tools
+     -Tools
 
-GitHub for hosting
+         GitHub for hosting
 
-Git CLI + VS Code for local editing
+         Git CLI + VS Code for local editing
 
- - Workflow
+ Workflow
 
-git clone your repo
-Create directory and file structure
-Build Terraform and Ansible code
-Commit with git add . and git commit -m "message"
-Push with git push origin main
+     Git clone your repo
+     Create directory and file structure
+     Build Terraform and Ansible code
+     Commit with git add . and git commit -m "message"
+     Push with git push origin main
