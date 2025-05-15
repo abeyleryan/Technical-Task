@@ -1,4 +1,4 @@
-- name: Run Windows Updates
+- name: Run Windows Updates with Retry Until No Reboot Required
   hosts: all
   tasks:
     - name: Install security updates
@@ -6,11 +6,15 @@
         category_names:
           - SecurityUpdates
         reboot: yes
+      register: updates
+      retries: 3
+      delay: 60
+      until: updates.reboot_required == false
 
     - name: Check installed updates
       win_shell: Get-HotFix | Sort-Object -Property InstalledOn
-      register: updates
+      register: hotfixes
 
     - name: Show installed updates
       debug:
-        msg: "{{ updates.stdout_lines }}"
+        msg: "{{ hotfixes.stdout_lines }}"
