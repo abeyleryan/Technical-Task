@@ -1,5 +1,5 @@
 - name: Manage Antivirus on Windows
-  hosts: all
+  hosts: windows
   tasks:
     - name: Ensure Defender is enabled
       win_feature:
@@ -16,3 +16,29 @@
     - name: Print threats
       debug:
         msg: "{{ threats.stdout }}"
+
+- name: Manage Antivirus on Linux
+  hosts: linux
+  become: true
+  tasks:
+    - name: Install ClamAV antivirus
+      package:
+        name: clamav
+        state: present
+
+    - name: Ensure ClamAV service is started
+      service:
+        name: clamav-freshclam
+        state: started
+        enabled: true
+
+    - name: Update ClamAV virus definitions
+      command: freshclam
+
+    - name: Run a quick antivirus scan on /home
+      command: clamscan -r /home
+      register: scan_output
+
+    - name: Display scan results
+      debug:
+        msg: "{{ scan_output.stdout_lines }}"
