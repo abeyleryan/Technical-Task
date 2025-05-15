@@ -1,5 +1,12 @@
 - name: Monitor Windows Server Metrics
   hosts: all
+  vars:
+    alert_email: "nikosolutions13@gmail.com"
+    smtp_server: "smtp.gmail.com"
+    smtp_port: "587"
+    smtp_username: "nikosolutions13@gmail.com"       
+    smtp_password: "password123"          
+
   tasks:
     - name: Check CPU usage
       win_shell: Get-WmiObject Win32_Processor | Select-Object -ExpandProperty LoadPercentage
@@ -9,6 +16,18 @@
       debug:
         msg: "CPU Usage: {{ cpu_usage.stdout }}%"
 
+    - name: Send email for high CPU
+      win_shell: |
+        Send-MailMessage -To "{{ alert_email }}" `
+                         -From "{{ smtp_username }}" `
+                         -Subject "High CPU Alert on {{ ansible_hostname }}" `
+                         -Body "CPU usage is at {{ cpu_usage.stdout }}%" `
+                         -SmtpServer "{{ smtp_server }}" `
+                         -Port {{ smtp_port }} `
+                         -UseSsl `
+                         -Credential (New-Object PSCredential('{{ smtp_username }}', (ConvertTo-SecureString '{{ smtp_password }}' -AsPlainText -Force)))
+      when: cpu_usage.stdout|int > 80
+
     - name: Check disk space
       win_shell: Get-PSDrive C | Select-Object -ExpandProperty Free
       register: disk_free
@@ -16,3 +35,15 @@
     - name: Show disk space
       debug:
         msg: "Free disk space: {{ disk_free.stdout }} bytes"
+
+    - name: Send email for low disk space
+      win_shell: |
+        Send-MailMessage -To "{{ alert_email }}" `
+                         -From "{{ smtp_username }}" `
+                         -Subject "Low Disk Space on {{ ansible_hostname }}" `
+                         -Body "Only {{ disk_free.stdout }} bytes free on C:\\ drive." `
+                         -SmtpServer "{{ smtp_server }}" `
+                         -Port {{ smtp_port }} `
+                         -UseSsl `
+                         -Credential (New-Object PSCredential('{{ smtp_username }}', (ConvertTo-SecureString '{{ smtp_password }}' -AsPlainText -Force)))
+      when: disk_free.stdout|float < 5368709120  
